@@ -1,22 +1,17 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
+import ClientSideLayout from './ClientSideLayout';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  subsets: ['latin'],
 });
-
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-  title: "IUT Test Prep - Mock Test Platform",
-  description: "Practice for IUT admission with realistic mock tests and track your progress",
+export const metadata = {
+  title: 'IUT Test Prep - Mock Test Platform',
+  description: 'Practice for IUT admission with realistic mock tests and track your progress',
 };
 
 export default function RootLayout({
@@ -27,13 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+        className={`${geistSans.className} ${geistMono.className} antialiased flex flex-col min-h-screen`}
       >
-        <Navbar />
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+        <ClientSideLayout>{children}</ClientSideLayout>
       </body>
     </html>
   );
