@@ -2,22 +2,53 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignInForm() {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle sign in logic here
-    console.log({ email, password, rememberMe });
+    setError('');
+    setSuccess('');
+
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!password) {
+      setError('Please enter your password');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await login(email, password);
+      setSuccess('Sign in successful! Redirecting...');
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignIn = () => {
-    // Handle Google sign in logic here
-    console.log('Google sign in');
+    // Google OAuth will be implemented later
+    setError('Google Sign-In coming soon!');
   };
 
   return (
@@ -32,6 +63,20 @@ export default function SignInForm() {
       
       <div className="relative z-10">
         <h2 className="text-3xl font-bold text-[#004B49] mb-6">Sign In</h2>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Success Message */}
+        {success && (
+          <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm">
+            {success}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email Field */}
@@ -109,9 +154,10 @@ export default function SignInForm() {
           {/* Sign In Button */}
           <button
             type="submit"
-            className="w-full bg-[#004B49] text-white py-3 rounded-lg font-medium hover:bg-[#003333] transition-colors"
+            disabled={isLoading}
+            className="w-full bg-[#004B49] text-white py-3 rounded-lg font-medium hover:bg-[#003333] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isLoading ? 'Signing In...' : 'Sign In'}
           </button>
 
           {/* Divider */}

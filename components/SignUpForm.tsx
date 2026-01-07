@@ -2,24 +2,82 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function SignUpForm() {
+  const { signup } = useAuth();
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Email validation
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Password validation
+  const validatePassword = (password: string): boolean => {
+    if (password.length < 8) return false;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    return hasUpperCase && hasLowerCase && hasNumber;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle sign up logic here
-    console.log({ email, password, confirmPassword, agreeToTerms });
+    setError('');
+    setSuccess('');
+
+    // Frontend validation
+    if (!username || username.trim().length < 3) {
+      setError('Username must be at least 3 characters');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError('Password must be at least 8 characters with uppercase, lowercase, and number');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (!agreeToTerms) {
+      setError('You must agree to the Terms and Conditions');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await signup(username.trim(), email, password);
+      setSuccess('Account created successfully! Redirecting to sign in...');
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignIn = () => {
-    // Handle Google sign in logic here
-    console.log('Google sign in');
+    // Google OAuth will be implemented later
+    setError('Google Sign-In coming soon!');
   };
 
   return (
@@ -36,7 +94,38 @@ export default function SignUpForm() {
       <div className="relative z-10">
         <h2 className="text-3xl font-bold text-[#004B49] mb-6">Sign Up</h2>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Success Message */}
+        {success && (
+          <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg text-sm">
+            {success}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Username Field */}
+          <div>
+            <label htmlFor="username" className="block text-sm font-bold text-white mb-2">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-4 py-3 border-none rounded-lg focus:outline-none focus:ring-2 focus:ring-white bg-white/60 text-black placeholder-gray-400"
+              placeholder="Enter your username"
+              required
+              minLength={3}
+            />
+          </div>
+
           {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-sm font-bold text-white mb-2">
@@ -146,9 +235,10 @@ export default function SignUpForm() {
           {/* Create Account Button */}
           <button
             type="submit"
-            className="w-full bg-[#004B49] text-white py-3 rounded-lg font-medium hover:bg-[#003333] transition-colors"
+            disabled={isLoading}
+            className="w-full bg-[#004B49] text-white py-3 rounded-lg font-medium hover:bg-[#003333] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Create Account
+            {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
 
           {/* Divider */}

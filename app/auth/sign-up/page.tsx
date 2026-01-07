@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import SignUpForm from '@/components/SignUpForm';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
   return (
