@@ -4,23 +4,33 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/AuthModal';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); 
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
   const navLinks = [
-    { href: '/mock-test', label: 'Mock Test' },
-    { href: '/analytics', label: 'Analytics' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/mock-test', label: 'Mock Test', protected: true },
+    { href: '/analytics', label: 'Analytics', protected: true },
+    { href: '/about', label: 'About', protected: false },
+    { href: '/contact', label: 'Contact', protected: false },
   ];
 
   const isActive = (href: string) => pathname.startsWith(href);
 
   const handleLogout = async () => {
     await logout();
+  };
+
+  const handleNavClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
+    if (link.protected && !user) {
+      e.preventDefault();
+      setShowAuthModal(true);
+      setIsMenuOpen(false);
+    }
   };
 
   return (
@@ -38,6 +48,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   isActive(link.href)
                     ? 'bg-white text-[#004B49]'
@@ -123,7 +134,12 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => {
+                  handleNavClick(e, link);
+                  if (!link.protected || user) {
+                    setIsMenuOpen(false);
+                  }
+                }}
                 className={`block px-4 py-2 rounded-md text-base font-medium transition-all ${
                   isActive(link.href)
                     ? 'bg-white text-[#004B49]'
@@ -176,6 +192,9 @@ export default function Navbar() {
           </div>
         )}
       </div>
+      
+      {/* Auth Modal */}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </nav>
   );
 }
