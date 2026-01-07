@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); 
   const pathname = usePathname();
+  const { user, logout } = useAuth();
 
   const navLinks = [
     { href: '/mock-test', label: 'Mock Test' },
@@ -15,8 +17,10 @@ export default function Navbar() {
     { href: '/contact', label: 'Contact' },
   ];
 
-  const isActive = (href: string) => {
-    return pathname.startsWith(href);
+  const isActive = (href: string) => pathname.startsWith(href);
+
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -45,25 +49,58 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Sign In/Sign Up - Right Side */}
-          <div className="hidden lg:flex items-center space-x-2">
-            <Link
-              href="/auth/sign-in"
-              className="px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/auth/sign-up"
-              className="px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
-            >
-              Sign Up
-            </Link>
+          {/* Sign In/Sign Up or Profile - Right Side */}
+          <div className="hidden lg:flex items-center space-x-2 relative group">
+            {user ? (
+              <div>
+                <button
+                  className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
+                >
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                  <span>{user.username}</span>
+                </button>
+
+                {/* Profile Dropdown */}
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 invisible group-hover:visible transition-all">
+                  {/* Dashboard Link */}
+                  <Link
+                    href="/dashboard"
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
+                  {/* Logout Button */}
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/auth/sign-in"
+                  className="px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/sign-up"
+                  className="px-4 py-2 text-sm font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}  // Toggle the mobile menu state
             className="lg:hidden p-2 rounded-md text-white hover:bg-white/10 focus:outline-none"
             aria-label="Toggle menu"
           >
@@ -98,20 +135,43 @@ export default function Navbar() {
             ))}
 
             <div className="pt-4 border-t border-white/20">
-              <Link
-                href="/auth/sign-in"
-                onClick={() => setIsMenuOpen(false)}
-                className="block px-4 py-2 text-base font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/auth/sign-up"
-                onClick={() => setIsMenuOpen(false)}
-                className="block px-4 py-2 text-base font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
-              >
-                Sign Up
-              </Link>
+              {user ? (
+                <>
+                  <div className="px-4 py-2 text-base font-medium text-white">
+                    {user.username}
+                  </div>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-4 py-2 text-base font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 text-base font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/sign-in"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-4 py-2 text-base font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
+                  >
+                    Sign In
+                  </Link>
+                  <Link
+                    href="/auth/sign-up"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-4 py-2 text-base font-medium text-white hover:bg-white hover:text-[#004B49] rounded-md transition-all"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
