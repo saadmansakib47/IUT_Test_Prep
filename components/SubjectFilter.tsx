@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 
 interface SubjectFilterProps {
@@ -20,7 +19,7 @@ export default function SubjectFilter({
       <label className="block text-sm font-semibold text-white mb-3">
         Subject:
       </label>
-      <div className="relative">
+      <div className="relative w-1/2">
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="w-full bg-white border-none rounded-lg px-4 py-3 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
@@ -48,7 +47,7 @@ export default function SubjectFilter({
             {/* Backdrop */}
             <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
 
-            {/* Dropdown Menu - Aligned with green box */}
+            {/* Dropdown Menu - Same width as button */}
             <div className="absolute z-20 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {subjects.map((subject) => (
                 <button
