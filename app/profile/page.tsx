@@ -4,7 +4,7 @@ import { useProtectedRoute } from '@/hooks/useProtectedRoute';
 import AuthModal from '@/components/auth/AuthModal';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ProfilePicture from '@/components/profile/ProfilePicture';
 import ProfileForm from '@/components/profile/ProfileForm';
 
@@ -15,24 +15,12 @@ export default function ProfilePage() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    fullName: '',
-    email: '',
+    fullName: user?.username || '',
+    email: user?.email || '',
     location: '',
     bio: '',
-    profilePicture: null as string | null,
+    profilePicture: user?.username || '',
   });
-
-  useEffect(() => {
-    if (user) {
-      setProfileData({
-        fullName: user.username || '',
-        email: user.email || '',
-        location: '',
-        bio: '',
-        profilePicture: null,
-      });
-    }
-  }, [user]);
 
   const handleModalClose = () => {
     closeModal();
