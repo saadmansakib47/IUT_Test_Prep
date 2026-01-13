@@ -64,6 +64,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(data.message || 'Sign in failed');
     }
 
+    // 🔍 Debug: Check if backend sent Set-Cookie header
+    console.log('🍪 Login Response Headers:');
+    console.log('Set-Cookie:', response.headers.get('set-cookie'));
+    console.log('All cookies after login:', document.cookie);
+
     // Extract user data from response (backend should return user object with id, username, email, role)
     const userData: User = {
       id: data.user?.id || data.id,
