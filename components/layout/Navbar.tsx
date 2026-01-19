@@ -12,6 +12,18 @@ export default function Navbar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
+  // Check if we're on admin pages
+  const isAdminPage = pathname.startsWith('/admin');
+
+  // Admin navigation links
+  const adminNavLinks = [
+    { href: '/admin', label: 'Dashboard' },
+    { href: '/admin/contacts', label: 'Messages' },
+    { href: '/admin/users', label: 'Users' },
+    { href: '/admin/questions', label: 'Questions' },
+  ];
+
+  // Regular user navigation links
   const navLinks = [
     { href: '/mock-test', label: 'Mock Test', protected: true },
     { href: '/analytics', label: 'Analytics', protected: true },
@@ -19,7 +31,17 @@ export default function Navbar() {
     { href: '/contact', label: 'Contact', protected: false },
   ];
 
-  const isActive = (href: string) => pathname.startsWith(href);
+  // Use admin links if on admin page, otherwise use regular links
+  const currentNavLinks = isAdminPage ? adminNavLinks : navLinks;
+
+  const isActive = (href: string) => {
+    // For admin dashboard, only match exact path
+    if (href === '/admin') {
+      return pathname === '/admin';
+    }
+    // For other paths, use startsWith
+    return pathname.startsWith(href);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -44,11 +66,11 @@ export default function Navbar() {
 
           {/* Desktop Navigation - Centered */}
           <div className="hidden lg:flex items-center space-x-2 absolute left-1/2 transform -translate-x-1/2">
-            {navLinks.map((link) => (
+            {currentNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={(e) => handleNavClick(e, link)}
+                onClick={(e) => !isAdminPage && handleNavClick(e, link)}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   isActive(link.href)
                     ? 'bg-white text-[#004B49]'
@@ -130,13 +152,15 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="lg:hidden py-4 space-y-2">
-            {navLinks.map((link) => (
+            {currentNavLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={(e) => {
-                  handleNavClick(e, link);
-                  if (!link.protected || user) {
+                  if (!isAdminPage) {
+                    handleNavClick(e, link);
+                  }
+                  if (!('protected' in link) || !link.protected || user) {
                     setIsMenuOpen(false);
                   }
                 }}
