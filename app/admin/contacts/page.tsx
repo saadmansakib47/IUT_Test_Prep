@@ -96,25 +96,25 @@ export default function AdminContactsPage() {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b-2 border-gray-200">
+              <thead className="bg-[#004B49]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     Message
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    Actions
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                    Action
                   </th>
                 </tr>
               </thead>
@@ -163,9 +163,9 @@ export default function AdminContactsPage() {
       {/* Reply Modal */}
       {selectedMessage && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-2xl max-w-lg w-full">
             <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">
                 Reply to Message
               </h3>
 
@@ -206,13 +206,13 @@ export default function AdminContactsPage() {
               <div className="flex gap-4">
                 <button
                   onClick={sendReply}
-                  className="flex-1 px-6 py-3 bg-[#004B49] text-white rounded-lg hover:bg-[#003333] font-semibold"
+                  className="flex-1 px-6 py-2.5 bg-[#004B49] text-white rounded-md hover:bg-[#003333] font-medium text-sm"
                 >
-                  Open Email Client to Reply
+                  Open email to reply
                 </button>
                 <button
                   onClick={() => setSelectedMessage(null)}
-                  className="px-6 py-3 border-2 border-gray-300 text-black rounded-lg hover:bg-gray-50"
+                  className="px-8 py-2.5 border-2 border-gray-300 text-black rounded-md hover:bg-gray-50 font-medium text-sm"
                 >
                   Cancel
                 </button>
