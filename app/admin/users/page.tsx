@@ -49,7 +49,11 @@ export default function AdminUsersPage() {
     const matchesSearch =
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
+    
+    // Ensure role comparison works regardless of case
+    const userRole = user.role ? user.role.toLowerCase() : '';
+    const matchesRole = filterRole === 'all' || userRole === filterRole;
+    
     return matchesSearch && matchesRole;
   });
 
@@ -110,7 +114,7 @@ export default function AdminUsersPage() {
               className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-[#004B49] focus:outline-none text-black"
             >
               <option value="all">All Roles</option>
-              <option value="user">User</option>
+              <option value="student">User</option>
               <option value="admin">Admin</option>
             </select>
           </div>
@@ -148,21 +152,21 @@ export default function AdminUsersPage() {
         <div className="bg-white rounded-xl shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b-2 border-gray-200">
+              <thead className="bg-[#004B49]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     #
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     Username
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    Role
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
+                    Action
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-white">
                     Joined Date
                   </th>
                 </tr>
@@ -181,11 +185,11 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="px-6 py-4 text-sm">
                       {user.role === 'admin' ? (
-                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">
+                        <span className="px-3 py-1 text-black rounded-full text-xs font-semibold">
                           Admin
                         </span>
                       ) : (
-                        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+                        <span className="px-3 py-1 text-black rounded-full text-xs font-semibold">
                           User
                         </span>
                       )}
