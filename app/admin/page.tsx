@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchAdminStats, AdminStats } from '@/lib/api';
+import {
+  fetchAdminStats,
+  AdminStats,
+  fetchAllUsers,
+  fetchContactMessages,
+  fetchQuestionBanks,
+} from '@/lib/api';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats>({
@@ -19,11 +25,32 @@ export default function AdminDashboard() {
   const loadStats = async () => {
     try {
       setLoading(true);
-      const data = await fetchAdminStats();
-      setStats(data);
+      
+      // Try to fetch from admin stats API first
+      try {
+        const data = await fetchAdminStats();
+        setStats(data);
+        setLoading(false);
+        return;
+      } catch (err) {
+        console.log('Admin stats API not available, calculating manually...');
+      }
+
+      // If stats API not available, fetch individual endpoints and calculate
+      const [users, messages, questionBanks] = await Promise.all([
+        fetchAllUsers().catch(() => []),
+        fetchContactMessages().catch(() => []),
+        fetchQuestionBanks().catch(() => []),
+      ]);
+
+      setStats({
+        totalUsers: users.length,
+        totalMessages: messages.length,
+        totalQuestionBanks: questionBanks.length,
+        recentActivity: 'System ready',
+      });
     } catch (err) {
-      console.log('Admin stats API not yet available');
-      // Keep default values - backend not ready yet
+      console.log('Unable to load stats');
       setStats({
         totalUsers: 0,
         totalMessages: 0,

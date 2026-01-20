@@ -70,14 +70,8 @@ export default function AdminUsersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Users Management</h2>
-        <button
-          onClick={loadUsers}
-          className="px-4 py-2 border-2 border-[#004B49] text-[#004B49] rounded-lg hover:bg-gray-50"
-        >
-          Refresh
-        </button>
       </div>
 
       {/* Filters */}

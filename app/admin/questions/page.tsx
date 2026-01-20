@@ -23,6 +23,13 @@ export default function AdminQuestionsPage() {
     }
   }, [activeTab]);
 
+  // Refresh list when upload is successful
+  useEffect(() => {
+    if (success && activeTab === 'list') {
+      loadQuestionBanks();
+    }
+  }, [success, activeTab]);
+
   const loadQuestionBanks = async () => {
     try {
       setLoading(true);
@@ -65,7 +72,7 @@ export default function AdminQuestionsPage() {
       const result = await uploadQuestionBankCSV(selectedFile);
       
       setSuccess(
-        `Successfully uploaded ${selectedFile.name}. ${result.questionsCount} questions have been imported into "${result.message}".`
+        `Successfully uploaded ${selectedFile.name}. ${result.questionsCount || 0} questions have been imported.`
       );
       setSelectedFile(null);
       
@@ -73,10 +80,11 @@ export default function AdminQuestionsPage() {
       const fileInput = document.getElementById('csv-file') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
       
-      // Refresh question banks if on list tab
-      if (activeTab === 'list') {
+      // Switch to list tab and refresh to show the new question bank
+      setActiveTab('list');
+      setTimeout(() => {
         loadQuestionBanks();
-      }
+      }, 500);
     } catch (err) {
       const error = err as Error;
       setError(error.message || 'Failed to upload CSV file');
@@ -276,12 +284,6 @@ export default function AdminQuestionsPage() {
                 <option value="prev_year">Previous Year</option>
                 <option value="practice">Practice</option>
               </select>
-              <button
-                onClick={loadQuestionBanks}
-                className="ml-auto px-4 py-2 border-2 border-[#004B49] text-[#004B49] rounded-lg hover:bg-gray-50"
-              >
-                Refresh
-              </button>
             </div>
           </div>
 
