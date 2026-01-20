@@ -69,58 +69,58 @@ export default function AdminDashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#004B49]">
-          <div className="text-sm text-gray-600 mb-1">Total Users</div>
-          <div className="text-3xl font-bold text-[#004B49]">
+        <div className="bg-[#004B49] rounded-xl shadow-lg p-6">
+          <div className="text-sm text-white/80 mb-1">Total Users</div>
+          <div className="text-3xl font-bold text-white">
             {stats.totalUsers}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-          <div className="text-sm text-gray-600 mb-1">Contact Messages</div>
-          <div className="text-3xl font-bold text-blue-600">
+        <div className="bg-[#004B49] rounded-xl shadow-lg p-6">
+          <div className="text-sm text-white/80 mb-1">Contact Message</div>
+          <div className="text-3xl font-bold text-white">
             {stats.totalMessages}
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
-          <div className="text-sm text-gray-600 mb-1">Question Banks</div>
-          <div className="text-3xl font-bold text-green-600">
+        <div className="bg-[#004B49] rounded-xl shadow-lg p-6">
+          <div className="text-sm text-white/80 mb-1">Question Bank</div>
+          <div className="text-3xl font-bold text-white">
             {stats.totalQuestionBanks}
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
+      <div>
         <h3 className="text-xl font-semibold text-gray-900 mb-4">
           Quick Actions
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <a
             href="/admin/contacts"
-            className="p-6 border-2 border-gray-200 rounded-lg hover:border-[#004B49] hover:bg-gray-50 transition-colors"
+            className="bg-white p-6 border-2 border-[#004B49] rounded-lg hover:bg-gray-50 transition-colors"
           >
-            <div className="font-semibold text-gray-900 mb-2">View Messages</div>
-            <div className="text-sm text-gray-600">
-              Check contact submissions
+            <div className="font-semibold text-gray-900 mb-2">View Message</div>
+            <div className="text-sm text-black">
+              Check and respond to contact form submissions from students
             </div>
           </a>
 
           <a
             href="/admin/users"
-            className="p-6 border-2 border-gray-200 rounded-lg hover:border-[#004B49] hover:bg-gray-50 transition-colors"
+            className="bg-white p-6 border-2 border-[#004B49] rounded-lg hover:bg-gray-50 transition-colors"
           >
             <div className="font-semibold text-gray-900 mb-2">Manage Users</div>
-            <div className="text-sm text-gray-600">View user accounts</div>
+            <div className="text-sm text-black">View, edit, and manage all user accounts in the system</div>
           </a>
 
           <a
             href="/admin/questions"
-            className="p-6 border-2 border-gray-200 rounded-lg hover:border-[#004B49] hover:bg-gray-50 transition-colors"
+            className="bg-white p-6 border-2 border-[#004B49] rounded-lg hover:bg-gray-50 transition-colors"
           >
             <div className="font-semibold text-gray-900 mb-2">Upload Questions</div>
-            <div className="text-sm text-gray-600">Import CSV files</div>
+            <div className="text-sm text-black">Import new questions via CSV files to expand question banks</div>
           </a>
         </div>
       </div>
