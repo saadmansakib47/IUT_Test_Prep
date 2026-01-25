@@ -34,7 +34,7 @@ export default function AdminQuestionsPage() {
     try {
       setLoading(true);
       setError('');
-      const data = await fetchQuestionBanks();
+      const data = await fetchQuestionBanks('prev_year');
       setQuestionBanks(data);
     } catch (err) {
       const error = err as Error;
