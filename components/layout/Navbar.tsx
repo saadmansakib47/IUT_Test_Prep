@@ -67,7 +67,7 @@ export default function Navbar() {
     await logout();
   };
 
-  const handleNavClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
+  const handleNavClick = (e: React.MouseEvent, link: { href: string; label: string; protected?: boolean }) => {
     if (link.protected && !user) {
       e.preventDefault();
       setShowAuthModal(true);
