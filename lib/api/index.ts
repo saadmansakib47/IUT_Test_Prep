@@ -6,4 +6,5 @@ export * from './history';
 export * from './utils';
 export * from './admin';
 export * from './profile';
+export * from './ai';
 export { BASE_URL } from './client';

@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { fetchTestDetail, QuestionDetail, getSubjectName } from '@/lib/api';
+import { fetchTestDetail, QuestionDetail, getSubjectName, fetchTestAnalysis, fetchQuestionExplanation } from '@/lib/api';
 import QuestionCard from '@/components/exam/QuestionCard';
 
 export default function ResultsPage() {
@@ -17,9 +17,14 @@ export default function ResultsPage() {
   const [percentage, setPercentage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [aiAnalysis, setAiAnalysis] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [questionExplanations, setQuestionExplanations] = useState<{ [key: string]: string }>({});
+  const [loadingExplanations, setLoadingExplanations] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     loadTestResults();
+    loadAIAnalysis();
   }, [testSessionId]);
 
   const loadTestResults = async () => {
@@ -41,6 +46,31 @@ export default function ResultsPage() {
       const error = err as Error;
       setError(error.message || 'Failed to load results');
       setLoading(false);
+    }
+  };
+
+  const loadAIAnalysis = async () => {
+    try {
+      setAiLoading(true);
+      const analysis = await fetchTestAnalysis(testSessionId);
+      setAiAnalysis(analysis);
+    } catch (err) {
+      console.log('AI analysis not available:', err);
+      // Don't show error - AI is optional
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const loadQuestionExplanation = async (questionId: string) => {
+    try {
+      setLoadingExplanations(prev => ({ ...prev, [questionId]: true }));
+      const explanation = await fetchQuestionExplanation(testSessionId, questionId);
+      setQuestionExplanations(prev => ({ ...prev, [questionId]: explanation }));
+    } catch (err) {
+      console.log('AI explanation not available for question:', questionId, err);
+    } finally {
+      setLoadingExplanations(prev => ({ ...prev, [questionId]: false }));
     }
   };
 
@@ -133,6 +163,26 @@ export default function ResultsPage() {
           </div>
         </div>
 
+        {/* AI Test Analysis */}
+        {aiAnalysis && (
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl shadow-lg p-6 mb-8">
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-green-900 mb-1">AI Performance Analysis</h3>
+              <p className="text-sm text-green-700">Personalized insights from your admission mentor</p>
+            </div>
+            <div className="bg-white/70 backdrop-blur rounded-lg p-4 border border-green-100">
+              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{aiAnalysis}</p>
+            </div>
+          </div>
+        )}
+
+        {aiLoading && (
+          <div className="bg-green-50 border-2 border-green-200 rounded-xl shadow-lg p-8 mb-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-3"></div>
+            <p className="text-green-700 font-medium">Generating AI analysis...</p>
+          </div>
+        )}
+
         {/* Question Review */}
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Answer Review</h2>
@@ -196,6 +246,37 @@ export default function ResultsPage() {
                         </span>
                         {isCorrect && (
                           <span className="text-green-600 font-semibold ml-2">
+
+                {/* AI Explanation */}
+                {!questionExplanations[question.questionId] && !loadingExplanations[question.questionId] && (
+                  <button
+                    onClick={() => loadQuestionExplanation(question.questionId)}
+                    className="mt-4 px-4 py-2 bg-[#004B49] text-white rounded-lg hover:bg-green-700 text-sm font-medium flex items-center gap-2"
+                  >
+                    Get AI Explanation
+                  </button>
+                )}
+
+                {loadingExplanations[question.questionId] && (
+                  <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600 mx-auto mb-2"></div>
+                    <p className="text-sm text-green-700">Getting AI explanation...</p>
+                  </div>
+                )}
+
+                {questionExplanations[question.questionId] && (
+                  <div className="mt-4 bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                    <div className="flex items-start gap-2 mb-2">
+                      <svg className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                      </svg>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-green-900 mb-1 text-sm">AI Explanation</h4>
+                        <p className="text-sm text-green-800 leading-relaxed whitespace-pre-wrap">{questionExplanations[question.questionId]}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                             ✓ Correct Answer
                           </span>
                         )}
