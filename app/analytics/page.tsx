@@ -9,7 +9,7 @@ import QuickStats from '@/components/analytics/QuickStats';
 import ProficiencyList from '@/components/analytics/ProficiencyList';
 import AICoachInsights from '@/components/analytics/AICoachInsights';
 import ExamHistory from '@/components/analytics/ExamHistory';
-import { fetchTestHistory, TestHistoryItem } from '@/lib/api';
+import { fetchTestHistory, TestHistoryItem, fetchCoachInsights, CoachInsight, TestDataForCoach } from '@/lib/api';
 import { dummyAnalyticsData } from '@/lib/analyticsData';
 
 export default function AnalyticsPage() {
@@ -23,6 +23,8 @@ export default function AnalyticsPage() {
   const [readinessScore, setReadinessScore] = useState(0);
   const [accuracy, setAccuracy] = useState(0);
   const [avgSpeed, setAvgSpeed] = useState('0 min/test');
+  const [aiInsights, setAiInsights] = useState<CoachInsight[]>([]);
+  const [aiInsightsLoading, setAiInsightsLoading] = useState(false);
 
   const loadAnalyticsData = async () => {
     try {
@@ -51,6 +53,9 @@ export default function AnalyticsPage() {
         const recentTotal = recentTests.reduce((sum, exam) => sum + exam.total, 0);
         const calcReadiness = recentTotal > 0 ? (recentScore / recentTotal) * 100 : 0;
         setReadinessScore(Math.round(calcReadiness));
+
+        // Load AI coach insights from recent tests
+        loadAIInsights(historyData.data);
       }
 
       setLoading(false);
@@ -58,6 +63,35 @@ export default function AnalyticsPage() {
       const error = err as Error;
       setError(error.message || 'Failed to load analytics');
       setLoading(false);
+    }
+  };
+
+  const loadAIInsights = async (history: TestHistoryItem[]) => {
+    try {
+      setAiInsightsLoading(true);
+      
+      // Prepare data for AI (up to 5 recent tests)
+      const recentTests: TestDataForCoach[] = history.slice(0, 5).map(test => ({
+        title: test.examName,
+        score: test.score,
+        totalMarks: test.total,
+        timeTaken: test.timeTakenMinutes * 60, // Convert minutes to seconds
+        submittedAt: test.submittedAt,
+      }));
+
+      if (recentTests.length > 0) {
+        const insights = await fetchCoachInsights(recentTests);
+        setAiInsights(insights);
+      } else {
+        // No test history, set empty array
+        setAiInsights([]);
+      }
+    } catch (err) {
+      console.log('AI insights not available, using dummy data:', err);
+      // Set empty array to trigger dummy data fallback in render
+      setAiInsights([]);
+    } finally {
+      setAiInsightsLoading(false);
     }
   };
 
@@ -152,9 +186,24 @@ export default function AnalyticsPage() {
               />
             </div>
 
-            {/* AI Coach Insights - Using dummy data for now (will integrate AI later) */}
+            {/* AI Coach Insights - Real AI data */}
             <div className="mb-6">
-              <AICoachInsights insights={dummyAnalyticsData.insights} />
+              {aiInsightsLoading ? (
+                <div className="bg-white rounded-xl shadow-md p-12 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                  <p className="text-green-700 font-medium">Generating AI insights...</p>
+                </div>
+              ) : aiInsights.length > 0 ? (
+                <AICoachInsights insights={aiInsights
+                  .filter(insight => insight.tag === 'critical' || insight.tag === 'warning')
+                  .map(insight => ({
+                    type: insight.tag as 'critical' | 'warning',
+                    title: insight.tag === 'critical' ? 'Critical' : 'Warning',
+                    message: insight.message,
+                  }))} />
+              ) : (
+                <AICoachInsights insights={dummyAnalyticsData.insights} />
+              )}
             </div>
 
             {/* Exam History - Real data from API */}
