@@ -90,7 +90,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2 border-[#004B49]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-black mb-2">
