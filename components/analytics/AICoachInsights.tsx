@@ -1,3 +1,7 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+
 interface InsightCard {
   type: 'critical' | 'warning' | 'on-track';
   title: string;
@@ -9,6 +13,7 @@ interface AICoachInsightsProps {
 }
 
 export default function AICoachInsights({ insights }: AICoachInsightsProps) {
+  const router = useRouter();
   const getCardStyle = (type: 'critical' | 'warning' | 'on-track') => {
     if (type === 'critical') {
       return 'bg-red-100 border-red-200';
@@ -48,7 +53,10 @@ export default function AICoachInsights({ insights }: AICoachInsightsProps) {
               </span>
             </div>
             <p className="text-gray-800 text-sm mb-3">{insight.message}</p>
-            <button className="text-[#004B49] text-sm font-semibold hover:underline flex items-center gap-1">
+            <button 
+              onClick={() => router.push('/mock-test')}
+              className="text-[#004B49] text-sm font-semibold hover:underline flex items-center gap-1"
+            >
               Practice Now
               <svg
                 className="w-4 h-4"
