@@ -30,6 +30,7 @@ export default function Navbar() {
   const navLinks = [
     { href: '/mock-test', label: 'Mock Test', protected: true },
     { href: '/analytics', label: 'Analytics', protected: true },
+    { href: '/study-tips', label: 'Study Tips', protected: false },
     { href: '/about', label: 'About', protected: false },
     { href: '/contact', label: 'Contact', protected: false },
   ];
